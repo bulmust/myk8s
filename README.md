@@ -8,4 +8,3 @@ My personal dev k8s
 - `helm` Helm charts.
   - `default-values` Default values for helm charts.
 - `manifests` K8s manifests.
-
