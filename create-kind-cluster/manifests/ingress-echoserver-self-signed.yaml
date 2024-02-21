@@ -7,7 +7,7 @@ spec:
   tls:
   - hosts:
     - echo.localhost
-    secretName: localhost-tls
+    secretName: echo-localhost-tls
   rules:
   - host: echo.localhost
     http:

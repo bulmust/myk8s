@@ -1,0 +1,3 @@
+chartName: argo-cd
+version: 6.2.3
+repository: https://argoproj.github.io/argo-helm

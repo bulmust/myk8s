@@ -25,7 +25,7 @@ sleep 2
 
 # Create Kind cluster with 2 worker nodes and ingress-ready label
 echo "${GREEN}Create Kind cluster with 1 control plane and 2 worker nodes and ingress-ready label${NC}"
-kind create cluster --name $clusterName --config ../manifests/kind-1CP2W-Ingress.yaml
+kind create cluster --name $clusterName --config manifests/kind-1CP2W-Ingress.yaml
 
 # Sleep 2s
 sleep 2
@@ -38,8 +38,8 @@ sleep 2
 
 # Deploy Ingress-Nginx
 echo "${GREEN}Deploy Ingress${NC}"
-wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml -O ../manifests/deploy-ingress-nginx-kind.yaml
-kubectl apply -f ../manifests/deploy-ingress-nginx-kind.yaml
+wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml -O manifests/deploy-ingress-nginx-kind.yaml
+kubectl apply -f manifests/deploy-ingress-nginx-kind.yaml
 kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=180s
 # Sleep 2s
 sleep 2
@@ -83,9 +83,9 @@ echo "${GREEN}Create Test Namespace${NC}"
 kubectl create ns test
 echo "${GREEN}Deploy Echo-Server${NC}"
 # Deployment
-kubectl apply -f ../manifests/deployment-echoserver-1-10.yaml
+kubectl apply -f manifests/deployment-echoserver-1-10.yaml
 # Service
-kubectl apply -f ../manifests/service-echoserver.yaml
+kubectl apply -f manifests/service-echoserver.yaml
 # Wait for Deployment to be Ready
 kubectl wait --namespace test --for=condition=available deployment/echo-server --timeout=180s
 # Sleep 6s
@@ -96,13 +96,13 @@ echo "${GREEN}Initialize Echo Ingress${NC}"
 # If check if self-signed certificate is used
 if [ "$PORT" = "443" ]; then
     echo "${GREEN}Initialize Echo Ingress with Self-Signed Certificate${NC}"
-    kubectl apply -f ../manifests/ingress-echoserver-self-signed.yaml
+    kubectl apply -f manifests/ingress-echoserver-self-signed.yaml
 # Test Ingress (Skip Certificate Verification)
 echo "${GREEN}Test Ingress${NC}: ${RED}curl -k https://echo.localhost${NC}"
 curl -k https://echo.localhost
 else
     echo "${GREEN}Initialize Echo Ingress without Self-Signed Certificate${NC}"
-    kubectl apply -f ../manifests/ingress-echoserver.yaml
+    kubectl apply -f manifests/ingress-echoserver.yaml
 # Test Ingress
 echo "${GREEN}Test Ingress${NC}: ${RED}curl echo.localhost${NC}"
 curl echo.localhost

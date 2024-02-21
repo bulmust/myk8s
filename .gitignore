@@ -1,2 +1,8 @@
 # certificates folder
 certificates/
+
+# Default values folder
+defaultValues/
+
+# Temporary folder
+tmp/
