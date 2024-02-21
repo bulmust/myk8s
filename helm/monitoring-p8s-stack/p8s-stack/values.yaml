@@ -1,0 +1,95 @@
+defaultRules:
+  create: true
+  rules:
+    kubeProxy: false
+alertmanager:
+  enabled: false
+grafana:
+  enabled: false
+  forceDeployDashboards: true
+  defaultDashboardsTimezone: Europe/Istanbul
+  sidecar:
+    dashboards:
+      label: grafana_dashboard
+      labelValue: "load"
+kube-state-metrics:
+  nodeSelector:
+    role: monitoring
+  tolerations:
+    - key: "product"
+      operator: "Equal"
+      value: "monitoring"
+      effect: "NoSchedule"
+  resources:
+    requests:
+      cpu: 60m
+      memory: 60Mi
+    limits:
+      memory: 120Mi
+prometheus-node-exporter:
+  tolerations:
+    - key: "product"
+      operator: "Equal"
+      value: "monitoring"
+      effect: "NoSchedule"
+  resources:
+    requests:
+      cpu: 40m
+      memory: 50Mi
+    limits:
+      memory: 100Mi
+prometheusOperator:
+  nodeSelector:
+    role: monitoring
+  tolerations:
+    - key: "product"
+      operator: "Equal"
+      value: "monitoring"
+      effect: "NoSchedule"
+  resources:
+    requests:
+      cpu: 120m
+      memory: 100Mi
+    limits:
+      memory: 200Mi
+prometheus:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - "prometheus.localhost"
+    paths:
+      - "/"
+    tls:
+      - secretName: prometheus-localhost-tls
+        hosts:
+          - prometheus.localhost
+  prometheusSpec:
+    tolerations:
+      - key: "product"
+        operator: "Equal"
+        value: "monitoring"
+        effect: "NoSchedule"
+    nodeSelector:
+      role: monitoring
+    enableFeatures:
+      - exemplar-storage
+    serviceMonitorSelectorNilUsesHelmValues: false
+    enableAdminAPI: true
+    remoteWriteDashboards: true
+    retention: 1d
+    scrapeInterval: 15s
+    scrapeTimeout: 15s
+    externalLabels:
+      cluster: myk8s
+    remoteWrite:
+      - name: myk8s
+        url: http://mimir-nginx.monitoring-mimir:80/api/v1/push
+        headers:
+          X-Scope-OrgID: myk8s
+    resources:
+      requests:
+        cpu: 2000m
+        memory: 4500Mi
+      limits:
+        memory: 8Gi

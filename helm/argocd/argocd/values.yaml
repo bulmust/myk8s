@@ -10,7 +10,6 @@ configs:
     - name: myk8s
       type: git
       url: https://github.com/bulmust/myk8s
-      path:
 controller:
   metrics:
     enabled: true
