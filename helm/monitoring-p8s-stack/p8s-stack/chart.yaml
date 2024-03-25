@@ -1,3 +1,0 @@
-chartName: kube-prometheus-stack
-version: 56.6.2
-repository: https://prometheus-community.github.io/helm-charts

@@ -4,31 +4,22 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-# Ask Kind Cluster Name
-echo "${GREEN}Enter Kind Cluster Name:${NC}"
-read clusterName
-echo "${RED}Kind Cluster Name:${NC} ${GREEN}$clusterName${NC}"
-# Sleep 2s
-sleep 2
+# Cluster Name
+clusterName="myk8s"
 
 # Check There is No Kind Cluster with the Same Name
-echo "${GREEN}Check There is No Kind Cluster with the Same Name${NC}"
-kind get clusters | grep $clusterName
+echo "${GREEN}Check existence of Kind cluster with the same name${NC}"
+kind get clusters | grep "$clusterName"
 if [ $? -eq 0 ]; then
     echo "${RED}Kind Cluster with the Same Name Exists${NC}"
     exit 1
 else
     echo "${GREEN}Kind Cluster with the Same Name Does Not Exist${NC}"
 fi
-# Sleep 2s
-sleep 2
 
 # Create Kind cluster with 2 worker nodes and ingress-ready label
 echo "${GREEN}Create Kind cluster with 1 control plane and 2 worker nodes and ingress-ready label${NC}"
-kind create cluster --name $clusterName --config manifests/kind-1CP2W-Ingress.yaml
-
-# Sleep 2s
-sleep 2
+kind create cluster --name "$clusterName" --config manifests/kind-1CP2W-Ingress.yaml
 
 # Echo Current Context
 echo "${GREEN}Current Context${NC}"
@@ -50,24 +41,24 @@ echo "${GREEN}y${NC}/${RED}n${NC}"
 read response
 if [ "$response" = "y" ] || [ "$response" = "Y" ]; then
     # Create Self-Signed Certificate
-    echo "${GREEN}Create 365 Days Valid Self-Signed Certificate in ../certificates/ Folder${NC}"
+    echo "${GREEN}Create 365 Days valid Self-Signed certificate in certificates/ folder${NC}"
     # Check certificates folder
-    if [ ! -d "../certificates/" ]; then
-        echo "${GREEN}Create certificates Folder${NC}"
-        mkdir -r ../certificates/
-        cd ../certificates/
+    if [ ! -d "certificates/" ]; then
+        echo "${GREEN}Create certificates folder${NC}"
+        mkdir -r certificates/
+        cd certificates/
         # Create Self-Signed Certificate
-        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ../certificates/localhost.key -out ../certificates/localhost.crt -subj "/CN=localhost"
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout certificates/localhost.key -out certificates/localhost.crt -subj "/CN=localhost"
         # Create Certificate and Key Secret in kube-system Namespace 
-        kubectl create secret tls -n kube-system localhost-tls --cert=../certificates/localhost.crt --key=../certificates/localhost.key
+        kubectl create secret tls -n kube-system localhost-tls --cert=certificates/localhost.crt --key=certificates/localhost.key
         cd -
     else
         echo "${GREEN}certificates Folder Exists${NC}"
         # Hold Old Certificates and Continue
-        echo "${GREEN}Hold Old Certificates and Continue${NC}"
-        cd ../certificates/
+        echo "${GREEN}Hold old certificates and continue${NC}"
+        cd certificates/
         # Create Certificate and Key Secret in kube-system Namespace 
-        kubectl create secret tls -n kube-system localhost-tls --cert=../certificates/localhost.crt --key=../certificates/localhost.key
+        kubectl create secret tls -n kube-system localhost-tls --cert=certificates/localhost.crt --key=certificates/localhost.key
         cd -
     fi
     PORT=443
