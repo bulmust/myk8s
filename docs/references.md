@@ -5,3 +5,8 @@
 ## TLS Certificates
 
 1. [Blog: How to secure applications running on Kubernetes (SSL/TLS Certificates)?](https://medium.com/avmconsulting-blog/how-to-secure-applications-on-kubernetes-ssl-tls-certificates-8f7f5751d788)
+
+## Offline installation
+
+1. [extract docker images from helm chart](https://stackoverflow.com/questions/60892265/extract-docker-images-from-helm-chart)
+2. 
