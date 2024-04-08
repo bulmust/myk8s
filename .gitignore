@@ -3,3 +3,9 @@ certificates/
 
 # Temporary folder
 tmp/
+
+# Offline packages folders
+offline-packages*
+
+# Python cache
+__pycache__/
