@@ -1,0 +1,4 @@
+chartName: promtail
+version: 6.15.5
+repository: https://grafana.github.io/helm-charts
+# kcuc kind-myk8s;helm upgrade --install promtail grafana/promtail --namespace=monitoring --create-namespace -f /home/taygun/Documents/github/myk8s/helmInstall/monitoring/promtail/values.yaml --version=6.15.5 --debug

@@ -1,0 +1,156 @@
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  hosts:
+    - grafana.localhost
+  path: /
+  pathType: "ImplementationSpecific"
+  tls:
+    - secretName: grafana-tls
+      hosts:
+        - grafana.localhost
+# resources:
+#   limits:
+#     memory: 1Gi
+#   requests:
+#     cpu: 140m
+#     memory: 250Mi
+# persistence:
+#   type: pvc
+#   enabled: true
+#   accessModes:
+#     - ReadWriteOnce
+#   size: 1Gi
+adminUser: bulmust
+adminPassword: bulmustbulmust
+# extraSecretMounts:
+#   - name: grafana-secrets-extra
+#     secretName: grafana-secrets-extra
+#     defaultMode: 0440
+#     mountPath: /etc/secrets/azure-ad-secret
+#     readOnly: true
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    # - name: Metrics_All
+    #   uid: metrics-all
+    #   type: prometheus
+    #   access: proxy
+    #   orgId: 1
+    #   url: http://mimir-nginx.monitoring-mimir:80/prometheus
+    #   editable: true
+    #   isDefault: false
+    #   jsonData:
+    #     httpHeaderName1: "X-Scope-OrgID"
+    #   secureJsonData:
+    #     httpHeaderValue1: myk8s #|mimir-metamonitoring
+    - name: Local
+      uid: metrics-local
+      type: prometheus
+      access: proxy
+      orgId: 1
+      url: http://p8s-stack-kube-prometheus-prometheus.monitoring.svc:9090
+      editable: true
+      isDefault: true
+    - name: Logs_All
+      uid: logs-all
+      type: loki
+      access: proxy
+      orgId: 1
+      url: http://loki-distributed-gateway.monitoring.svc.cluster.local/
+      editable: true
+      isDefault: false
+      jsonData:
+        httpHeaderName1: "X-Scope-OrgID"
+      secureJsonData:
+        httpHeaderValue1: myk8s
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+    - name: 'infra'
+      orgId: 1
+      folder: 'Infrastructure'
+      folderUid: infrastructure-folder
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards/infra
+# dashboards:
+#   infra:
+#     k8s-addons-prometheus:
+#       gnetId: 19105
+#       datasource: 'Metrics_All'
+grafana.ini:
+  database:
+    wal: true
+  server:
+    root_url: https://%(domain)s:/
+  # auth.azuread:
+  #   allow_assign_grafana_admin: true
+  #   allow_sign_up: true
+  #   auth_url: 
+  #   auto_login: false
+  #   client_id:
+  #   client_secret: $__file{/etc/secrets/azure-ad-secret/client_secret}
+  #   enabled: true
+  #   name: Azure AD
+  #   role_attribute_strict: true
+  #   scopes: openid email profile
+  #   skip_org_role_sync: false
+  #   token_url:
+sidecar:
+  dashboards:
+    enabled: true
+    label: grafana_dashboard
+    labelValue: "load"
+    searchNamespace: ALL
+    folderAnnotation: grafana_folder
+    multicluster:
+      global:
+        enabled: true
+      etcd:
+        enabled: true
+    provider:
+      allowUiUpdates: true
+      foldersFromFilesStructure: true
+  # alerts:
+  #   label: grafana_alert
+  #   enabled: true
+  #   searchNamespace: ALL
+  #   labelValue: "load"
+  #   provider:
+  #     allowUiUpdates: true
+imageRenderer:
+  grafanaProtocol: https
+# alerting:
+#   contactpoints.yaml:
+#     secret:
+#       apiVersion: 1
+#       contactPoints:
+#         - orgId: 1
+#           name: Teams-Channel-Name
+#           receivers:
+#           - uid: teams-chanel-name-uid1
+#             type: teams
+#             settings:
+#               url:
+#               sectiontitle: ''
+#               summary: |
+#                 {{ `{{ include "default.message" . }}` }}
+  # policies.yaml:
+  #   policies:
+  #     - orgId: 1
+  #       receiver: Teams-Channel-Name
+  #       matchers:
+  #         - send = teams-devops-infra
+  #         - severity = critical
+# nodeSelector:
+#   role: monitoring
+# tolerations:
+#   - key: "product"
+#     operator: "Equal"
+#     value: "monitoring"
+#     effect: "NoSchedule"
