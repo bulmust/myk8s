@@ -1,10 +1,7 @@
 {
-    "clusters": [
-      {
-        "myk8s": 0
-      },
-      {
-        "myk8s2": 0
-      }
-    ]
+  "clusters": {
+    "myk8s": 0,
+    "myk8s2": 0,
+    "myk8s3": 0
+  }
 }
