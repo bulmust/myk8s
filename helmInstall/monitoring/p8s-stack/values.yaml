@@ -1,0 +1,184 @@
+#! 58.5.2
+
+#! Alertmanager default rules enabled even if alertmanager.enabled is false
+defaultRules:
+  create: true
+
+  #! defaultRules - Turn off kubeProxy alert
+  rules:
+    kubeProxy: false
+
+#! Alertmanager
+alertmanager:
+  enabled: false
+
+#! Grafana
+grafana:
+  enabled: false
+
+  #! Grafana - Turn on grafana dashboards
+  forceDeployDashboards: true
+
+  #! Grafana - Timezone
+  defaultDashboardsTimezone: Europe/Istanbul
+
+  #! Grafana - Sidecar for default Dashboards
+  sidecar:
+    dashboards:
+      label: grafana_dashboard
+      labelValue: "load"
+
+      #! Grafana - Sidecar - Send default dashboards to Infrastucture folder
+      #* Check configs in Grafana Helm Chart: .Values.sidecar.dashboards.folderAnnotation
+      annotations:
+        grafana_folder: "Infrastructure"
+
+#! Prometheus 
+prometheus:
+
+  #! Prometheus - Image
+  image:
+      registry: quay.io
+      repository: prometheus/prometheus
+      tag: v2.52.0
+
+  #! Prometheus - Ingress
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - prometheus.localhost
+    paths:
+      - "/"
+    tls:
+      - secretName: prometheus-tls
+        hosts:
+          - prometheus.localhost
+  
+  #! Prometheus - Configurations (Flags etc.)
+  prometheusSpec:
+
+    #! Features
+    enableFeatures:
+
+      #* https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage
+      - exemplar-storage
+    
+    # #! Remote Write Receiver
+    # #* This is a potential security risk and should be disabled in production.
+    # enableRemoteWriteReceiver: true
+
+    #! Remote Write Receiver - Configurations
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+
+    #! Enable Admin API
+    #* Enables access to the Prometheus web admin API. 
+    # This is a potential security risk and should be disabled in production.
+    enableAdminAPI: true
+    
+    #! Retention
+    retention: 1d
+
+    #! Scrape Options
+    scrapeInterval: 30s
+    scrapeTimeout: 30s
+    query:
+      #* The maximum time a query may take before being aborted.
+      #* This is added because fake metrics are shown in Grafana
+      lookbackDelta: 45s
+
+    #! Add extra labels
+    externalLabels:
+      cluster: myk8s
+    
+    #! Remote Write
+    #* https://prometheus.io/docs/prometheus/latest/configuration/configuration/#remote_write
+    remoteWrite:
+      - name: myk8s
+        url: http://mimir-nginx.monitoring.svc:80/api/v1/push
+        headers:
+          X-Scope-OrgID: myk8s
+
+        # #! Remote Write - Pick up only specific metrics
+        # #* https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#monitoring.coreos.com/v1.RelabelConfig
+        # writeRelabelConfigs:
+        #   - sourceLabels: [__name__]
+            
+        #     #* Only include metrics with named "A" AND "B". Do not forget ""
+        #     regex: "up|node_boot_time_seconds|node_uname_info|node_cpu_seconds_total|node_memory_MemTotal_bytes|node_memory_MemFree_bytes|node_memory_Cached_bytes|node_memory_Buffers_bytes|node_memory_MemTotal_bytes"
+        #     action: keep
+    
+    #! Resource limit/requests
+    # resources:
+    #   requests:
+    #     cpu: 2000m
+    #     memory: 4500Mi
+    #   limits:
+    #     memory: 8Gi
+    
+    # #! Node Selector/Tolerations
+    # tolerations:
+    #   - key: "product"
+    #     operator: "Equal"
+    #     value: "monitoring"
+    #     effect: "NoSchedule"
+    # nodeSelector:
+    #   role: monitoring
+
+
+#! Kube-state-metrics
+# kube-state-metrics:
+#   resources:
+#     requests:
+#       cpu: 60m
+#       memory: 60Mi
+#     limits:
+#       memory: 120Mi
+  # nodeSelector:
+  #   role: monitoring
+  # tolerations:
+  #   - key: "product"
+  #     operator: "Equal"
+  #     value: "monitoring"
+  #     effect: "NoSchedule"
+
+#! Node-exporter
+# prometheus-node-exporter:
+#   resources:
+#     requests:
+#       cpu: 40m
+#       memory: 50Mi
+#     limits:
+#       memory: 100Mi
+  
+  # #! Node-exporter needs to be installed on all nodes
+  # tolerations:
+  #   - key: "product"
+  #     operator: "Equal"
+  #     value: "monitoring"
+  #     effect: "NoSchedule"
+  #   - key: "product"
+  #     operator: "Equal"
+  #     value: "apps"
+  #     effect: "NoSchedule"
+  #   - key: node-role.kubernetes.io/control-plane
+  #     operator: Exists
+  #     effect: NoSchedule
+
+#! Prometheus Operator
+# prometheusOperator:
+  # nodeSelector:
+  #   role: monitoring
+  # tolerations:
+  #   - key: "product"
+  #     operator: "Equal"
+  #     value: "monitoring"
+  #     effect: "NoSchedule"
+
+  # resources:
+  #   requests:
+  #     cpu: 120m
+  #     memory: 100Mi
+  #   limits:
+  #     memory: 200Mi

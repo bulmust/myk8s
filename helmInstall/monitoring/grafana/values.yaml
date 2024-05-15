@@ -1,3 +1,13 @@
+#! 7.3.11
+
+#! Image
+image:
+  registry: docker.io
+  repository: grafana/grafana
+  tag: "11.0.0"
+  pullPolicy: IfNotPresent
+
+#! Ingress
 ingress:
   enabled: true
   ingressClassName: nginx
@@ -9,42 +19,58 @@ ingress:
     - secretName: grafana-tls
       hosts:
         - grafana.localhost
+
+##! Resource Limits/Requests
 # resources:
 #   limits:
 #     memory: 1Gi
 #   requests:
 #     cpu: 140m
 #     memory: 250Mi
+
+##! Create PVC
 # persistence:
 #   type: pvc
 #   enabled: true
 #   accessModes:
 #     - ReadWriteOnce
 #   size: 1Gi
+
+#! Username and Password
 adminUser: bulmust
 adminPassword: bulmustbulmust
+
+#! Add secret for Azure AD
 # extraSecretMounts:
 #   - name: grafana-secrets-extra
 #     secretName: grafana-secrets-extra
 #     defaultMode: 0440
 #     mountPath: /etc/secrets/azure-ad-secret
 #     readOnly: true
+
+#! Datasources
 datasources:
   datasources.yaml:
     apiVersion: 1
     datasources:
-    # - name: Metrics_All
-    #   uid: metrics-all
-    #   type: prometheus
-    #   access: proxy
-    #   orgId: 1
-    #   url: http://mimir-nginx.monitoring-mimir:80/prometheus
-    #   editable: true
-    #   isDefault: false
-    #   jsonData:
-    #     httpHeaderName1: "X-Scope-OrgID"
-    #   secureJsonData:
-    #     httpHeaderValue1: myk8s #|mimir-metamonitoring
+    
+    ##! Datasources - Mimir
+    - name: Metrics_All
+      uid: metrics-all
+      type: prometheus
+      access: proxy
+      orgId: 1
+      url: http://mimir-nginx.monitoring.svc:80/prometheus
+      editable: true
+      isDefault: false
+      #! Datasources - Mimir - Headers
+      jsonData:
+        httpHeaderName1: "X-Scope-OrgID"
+      secureJsonData:
+        #* Do not put any spaces between | and the value
+        httpHeaderValue1: myk8s|mimir-metamonitoring
+    
+    #! Data sources - Local Prometheus
     - name: Local
       uid: metrics-local
       type: prometheus
@@ -53,6 +79,8 @@ datasources:
       url: http://p8s-stack-kube-prometheus-prometheus.monitoring.svc:9090
       editable: true
       isDefault: true
+
+    #! Data sources - Loki
     - name: Logs_All
       uid: logs-all
       type: loki
@@ -61,31 +89,49 @@ datasources:
       url: http://loki-distributed-gateway.monitoring.svc.cluster.local/
       editable: true
       isDefault: false
+      #! Data source - Loki - Headers
       jsonData:
         httpHeaderName1: "X-Scope-OrgID"
       secureJsonData:
         httpHeaderValue1: myk8s
+    
+    #! Data sources - Infinity
+    #* https://grafana.com/docs/plugins/yesoreyeram-infinity-datasource/latest/setup/provisioning/
+    - name: Json
+      uid: json
+      type: yesoreyeram-infinity-datasource
+
+#! Dashboard Providers
 dashboardProviders:
   dashboardproviders.yaml:
     apiVersion: 1
     providers:
-    - name: 'infra'
+    
+    #! Create Infrasructure Folder
+    - name: 'infrastructure' # Name of this must start with lowercase
       orgId: 1
-      folder: 'Infrastructure'
+      folder: 'Infrastructure' # Name of the folder shown in Grafana
       folderUid: infrastructure-folder
       type: file
       disableDeletion: false
       editable: true
       options:
-        path: /var/lib/grafana/dashboards/infra
+        path: /var/lib/grafana/dashboards/infrastructure
+
+#! Add dashboard to 'Infrastructure' folder
 # dashboards:
-#   infra:
+#   infrastructure:
 #     k8s-addons-prometheus:
 #       gnetId: 19105
 #       datasource: 'Metrics_All'
+
+#! Grafana Configuration
 grafana.ini:
+
   database:
     wal: true
+  
+  #! Azure-AD Configuration
   server:
     root_url: https://%(domain)s:/
   # auth.azuread:
@@ -101,13 +147,54 @@ grafana.ini:
   #   scopes: openid email profile
   #   skip_org_role_sync: false
   #   token_url:
+
+  #! Assign Dashboard to Home
+  #* You have to import configmap with the dashboard
+  #* The name of json file must be the same as the name of the dashboard in the configmap
+  dashboards:
+    default_home_dashboard_path: /tmp/dashboards/dashboards-root-node-resources.json
+
+#! Plugins
+plugins:
+  - grafana-polystat-panel
+  - yesoreyeram-infinity-datasource
+
+#! Sidecar
+#* If you want to add a dashboard, use configmap:
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: dashboard-name
+  
+#   #* Send this dashboard to 'Infra' folder
+#   annotations:
+#     grafana_folder: "Infrastructure"
+
+#   #* This label is required for the sidecar to pick up the dashboard
+#   labels:
+#     grafana_dashboard: "load"
+# data:
+#   dashboard1.json: |
+#     #* JSON HERE
+#     {
+#       "annotations": {}
+#     }
 sidecar:
+  
+  #! Sidecar - Dashboards
   dashboards:
     enabled: true
+
+    #! Sidecar - Dashboards - Catch all dashboards with this label
     label: grafana_dashboard
     labelValue: "load"
+    
+    #! Sidecar - Dashboards - Search all namespaces
     searchNamespace: ALL
+
+    #! Sidecar - Dashboards - Annotations for sending dashboards to specific folders
     folderAnnotation: grafana_folder
+    
     multicluster:
       global:
         enabled: true
@@ -116,6 +203,8 @@ sidecar:
     provider:
       allowUiUpdates: true
       foldersFromFilesStructure: true
+  
+  ##! Sidecar - Alerts
   # alerts:
   #   label: grafana_alert
   #   enabled: true
@@ -123,30 +212,46 @@ sidecar:
   #   labelValue: "load"
   #   provider:
   #     allowUiUpdates: true
+
+
 imageRenderer:
   grafanaProtocol: https
+
+#! Alerts
 # alerting:
-#   contactpoints.yaml:
-#     secret:
-#       apiVersion: 1
-#       contactPoints:
-#         - orgId: 1
-#           name: Teams-Channel-Name
-#           receivers:
-#           - uid: teams-chanel-name-uid1
-#             type: teams
-#             settings:
-#               url:
-#               sectiontitle: ''
-#               summary: |
-#                 {{ `{{ include "default.message" . }}` }}
+
+  # #! Alerts - Contactpoints
+  # contactpoints.yaml:
+  #   secret:
+  #     apiVersion: 1
+  #     contactPoints:
+        
+  #       #! Alerts - Contactpoints - Microsoft Teams
+  #       - orgId: 1
+  #         name: Teams-Channel-Name
+  #         receivers:
+  #         - uid: teams-chanel-name-uid1
+  #           type: teams
+  #           settings:
+  #             url:
+  #             sectiontitle: ''
+  #             summary: |
+  #               {{ `{{ include "default.message" . }}` }}
+
+  # #! Alerts - Policies
   # policies.yaml:
   #   policies:
   #     - orgId: 1
   #       receiver: Teams-Channel-Name
+  #
+  #       #! Alerts - Policies - Conditions
+  #       #* If you label your alerts with 'send' and 'severity', It will send alerts to the Teams-Chanel-Name
   #       matchers:
   #         - send = teams-devops-infra
   #         - severity = critical
+
+#! NodeSelector and Tolerations
+#* If the nodes are tainted
 # nodeSelector:
 #   role: monitoring
 # tolerations:
