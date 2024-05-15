@@ -1,13 +1,12 @@
 {
     "clusters": [
       {
-        "myk8s": 0
+        "name": "myk8s",
+        "up": 0
       },
       {
-        "myk8s2": 0
-      },
-      {
-        "myk8s3": 0
+        "name": "myk8s2",
+        "up": 0
       }
     ]
 }
