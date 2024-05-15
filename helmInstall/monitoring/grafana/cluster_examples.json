@@ -2,18 +2,15 @@
     "clusters": [
       {
         "name": "myk8s",
-        "up": "0",
-        "nodes": 3
+        "up": 0
       },
       {
         "name": "myk8s2",
-        "up": "0",
-        "nodes": 3
+        "up": 0
       },
       {
         "name": "myk8s3",
-        "up": "0",
-        "nodes": 3
+        "up": 0
       }
     ]
   }
