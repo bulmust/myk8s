@@ -102,21 +102,21 @@ datasources:
       type: yesoreyeram-infinity-datasource
 
 #! Dashboard Providers
-dashboardProviders:
-  dashboardproviders.yaml:
-    apiVersion: 1
-    providers:
+# dashboardProviders:
+#   dashboardproviders.yaml:
+#     apiVersion: 1
+#     providers:
     
-    #! Create Infrasructure Folder
-    - name: 'infrastructure' # Name of this must start with lowercase
-      orgId: 1
-      folder: 'Infrastructure' # Name of the folder shown in Grafana
-      folderUid: infrastructure-folder
-      type: file
-      disableDeletion: false
-      editable: true
-      options:
-        path: /var/lib/grafana/dashboards/infrastructure
+#     #! Create Infrasructure Folder
+#     - name: 'infrastructure' # Name of this must start with lowercase
+#       orgId: 1
+#       folder: 'Infrastructure' # Name of the folder shown in Grafana
+#       folderUid: infrastructure-folder
+#       type: file
+#       disableDeletion: false
+#       editable: true
+#       options:
+#         path: /var/lib/grafana/dashboards/infrastructure
 
 #! Add dashboard to 'Infrastructure' folder
 # dashboards:

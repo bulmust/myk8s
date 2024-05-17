@@ -27,14 +27,14 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 57,
+      "id": 55,
       "links": [],
       "liveNow": false,
       "panels": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "metrics-all"
+            "type": "datasource",
+            "uid": "-- Mixed --"
           },
           "fieldConfig": {
             "defaults": {
@@ -138,12 +138,37 @@ data:
               "expr": "up{job=\"apiserver\"}",
               "format": "time_series",
               "fullMetaSearch": false,
+              "hide": false,
               "includeNullMetadata": true,
               "instant": false,
               "legendFormat": "{{cluster}}",
               "range": true,
               "refId": "A",
               "useBackend": false
+            },
+            {
+              "columns": [],
+              "datasource": {
+                "type": "yesoreyeram-infinity-datasource",
+                "uid": "json"
+              },
+              "filters": [],
+              "format": "table",
+              "global_query_id": "",
+              "hide": false,
+              "refId": "B",
+              "root_selector": "clusters",
+              "source": "url",
+              "type": "json",
+              "url": "https://raw.githubusercontent.com/bulmust/myk8s/main/helmInstall/monitoring/grafana/clusters-all.json",
+              "url_options": {
+                "body_content_type": "text/plain",
+                "body_type": "raw",
+                "data": "",
+                "headers": [],
+                "method": "GET",
+                "params": []
+              }
             }
           ],
           "title": "Cluster Status",
@@ -809,7 +834,7 @@ data:
       "refresh": "5s",
       "schemaVersion": 39,
       "tags": [
-        "Home"
+        "Borda"
       ],
       "templating": {
         "list": [
@@ -852,6 +877,6 @@ data:
       "timezone": "Europe/Istanbul",
       "title": "Node - Resources",
       "uid": "dashboards-root-node-resources",
-      "version": 2,
+      "version": 3,
       "weekStart": ""
     }

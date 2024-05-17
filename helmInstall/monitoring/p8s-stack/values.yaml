@@ -108,6 +108,8 @@ prometheus:
         #     #* Only include metrics with named "A" AND "B". Do not forget ""
         #     regex: "up|node_boot_time_seconds|node_uname_info|node_cpu_seconds_total|node_memory_MemTotal_bytes|node_memory_MemFree_bytes|node_memory_Cached_bytes|node_memory_Buffers_bytes|node_memory_MemTotal_bytes"
         #     action: keep
+
+        # collectd, pod_status
     
     #! Resource limit/requests
     # resources:
