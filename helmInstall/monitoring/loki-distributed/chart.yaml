@@ -1,4 +1,0 @@
-chartName: loki-distributed
-version: 0.79.0
-repository: https://grafana.github.io/helm-charts
-# kcuc kind-myk8s;helm upgrade --install loki-distributed grafana/loki-distributed --namespace=monitoring --create-namespace -f /home/taygun/Documents/github/myk8s/helmInstall/monitoring/loki-distributed/values.yaml --version=0.79.0 --debug

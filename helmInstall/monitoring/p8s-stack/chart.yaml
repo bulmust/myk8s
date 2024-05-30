@@ -1,7 +1,0 @@
-chartName: kube-prometheus-stack
-version: 58.5.2
-repository: https://prometheus-community.github.io/helm-charts
-
-# kcuc kind-myk8s
-
-# helm upgrade --install p8s-stack kube-prometheus-stack/kube-prometheus-stack -n monitoring -f /home/taygun/Documents/github/myk8s/helmInstall/monitoring/p8s-stack/values.yaml --version=58.5.2 --debug

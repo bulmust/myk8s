@@ -1,4 +1,0 @@
-chartName: minio
-version: 5.2.0
-repository: https://charts.min.io/
-# kcuc kind-myk8s;helm upgrade --install minio minio/minio --namespace=monitoring --create-namespace -f /home/taygun/Documents/github/myk8s/helmInstall/monitoring/minio/values.yaml --version=5.2.0 --debug
