@@ -1,0 +1,11 @@
+chartName: hawkbit
+version: 1.6.0
+repository: ttps://eclipse.org/packages/charts
+# MySql https://github.com/bitnami/charts/blob/main/bitnami/mysql/Chart.yaml
+
+
+# kcuc kind-myk8s
+
+# helm upgrade --install hawkbit eclipse-iot/hawkbit --namespace=hawkbit --create-namespace -f /home/taygun/Documents/github/myk8s/helmInstall/monitoring/grafana/values.yaml --version=1.6.0 --debug
+
+# kubectl apply -f /home/taygun/Documents/github/myk8s/helmInstall/eclipse/hawkbit/ingress.yaml

@@ -1,0 +1,95 @@
+config:
+  application:
+    spring:
+      security:
+        user:
+          #! Username
+          name: borda
+  secrets:
+    spring:
+      security:
+        user:
+          #! Password
+          # the "{noop}" prefix is needed!
+          password: "{noop}helloWorld"
+
+#! Hawkbit Persistence
+fileStorage:
+  enabled: true
+  pvcSize: "1Gi"
+
+#! MySQL
+# https://github.com/bitnami/charts/blob/master/bitnami/mysql/values.yaml
+mysql:
+  enabled: true
+  primary:
+    persistence:
+      enabled: true
+      size: "1Gi"
+  auth:
+    username: hawkbit
+    password: hawkbit
+    database: hawkbit
+  metrics:
+    enabled: true
+  #! MySQL Node Selector
+  # nodeSelector: {}
+  #! MySQL Tolerations
+  # tolerations: []
+  #! MySQL Affinity
+  # affinity: {}
+
+#! RabbitMQ
+# https://github.com/bitnami/charts/blob/master/bitnami/rabbitmq/values.yaml
+rabbitmq:
+  enabled: true
+  persistence:
+    enabled: true
+    size: "1Gi"
+  auth:
+    username: hawkbit
+    password: hawkbit
+  metrics:
+    enabled: false
+  #! RabbitMQ Node Selector
+  # nodeSelector: {}
+  #! RabbitMQ Tolerations
+  # tolerations: []
+  #! RabbitMQ Affinity
+  # affinity: {}
+
+#! Env variables
+# env:
+#   springDatasourceHost: "hawkbit-mysql"
+#   springDatasourceDb: "hawkbit"
+#   # if springDatasourceUrl is set override default mysql db url
+#   springDatasourceUrl: ""
+#   springRabbitmqHost: "hawkbit-rabbitmq"
+#   springRabbitmqUsername: "hawkbit"
+#   springRabbitmqPassword: "hawkbit"
+
+#! Resources
+# resources:
+#   requests:
+#     cpu: 100m
+#     memory: 256Mi
+#   limits:
+#     cpu: 500m
+#     memory: 512Mi
+
+#! Node Selector
+# nodeSelector: {}
+#! Tolerations
+# tolerations: []
+#! Affinity
+# affinity: {}
+
+image:
+  #! Newer images do not work
+  tag: 0.3.0M9-mysql
+
+#! Ingress MUST BE DISABLED
+# Install it manually
+# kaf ingress.yaml => https://hawkbit.localhost/
+ingress:
+  enabled: false
