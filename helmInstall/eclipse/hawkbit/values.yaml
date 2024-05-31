@@ -5,7 +5,23 @@ config:
         user:
           #! Username
           name: admin
+  # ========================
   secrets:
+    # SPRING_APPLICATION_JSON Part (Write Yaml, helm will convert to json)
+    hawkbit:
+      server:
+        im:
+          users:
+            - username: "johnlocke"
+              password: "{noop}c8lT@64ntdc3"
+              firstname: "Taygun"
+              lastname: "Super Admin"
+              permissions: "ALL"
+            - username: "hugoreyes"
+              password: "{noop}J8Q8OwJoeXvErTQN8HLkiR0r"
+              firstname: "Taygun"
+              lastname: "Observer"
+              permissions: "READ_TARGET, READ_REPOSITORY, READ_ROLLOUT"
     spring:
       security:
         user:
@@ -15,6 +31,7 @@ config:
       datasource:
         username: mysqlUsername
         password: mysqlPassword
+  # ========================
 
 #! Hawkbit Persistence
 fileStorage:
