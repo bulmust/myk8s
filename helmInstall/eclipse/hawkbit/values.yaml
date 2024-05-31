@@ -4,14 +4,17 @@ config:
       security:
         user:
           #! Username
-          name: borda
+          name: admin
   secrets:
     spring:
       security:
         user:
           #! Password
           # the "{noop}" prefix is needed!
-          password: "{noop}helloWorld"
+          password: "{noop}admin"
+      datasource:
+        username: mysqlUsername
+        password: mysqlPassword
 
 #! Hawkbit Persistence
 fileStorage:
@@ -27,8 +30,8 @@ mysql:
       enabled: true
       size: "1Gi"
   auth:
-    username: hawkbit
-    password: hawkbit
+    username: mysqlUsername
+    password: mysqlPassword
     database: hawkbit
   metrics:
     enabled: true
