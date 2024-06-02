@@ -49,15 +49,12 @@ mysql:
   auth:
     username: mysqlUsername
     password: mysqlPassword
-    database: hawkbit
   metrics:
-    enabled: true
+    enabled: false
   #! MySQL Node Selector
   # nodeSelector: {}
   #! MySQL Tolerations
   # tolerations: []
-  #! MySQL Affinity
-  # affinity: {}
 
 #! RabbitMQ
 # https://github.com/bitnami/charts/blob/master/bitnami/rabbitmq/values.yaml
@@ -75,8 +72,6 @@ rabbitmq:
   # nodeSelector: {}
   #! RabbitMQ Tolerations
   # tolerations: []
-  #! RabbitMQ Affinity
-  # affinity: {}
 
 #! Env variables
 # env:
@@ -101,8 +96,6 @@ rabbitmq:
 # nodeSelector: {}
 #! Tolerations
 # tolerations: []
-#! Affinity
-# affinity: {}
 
 image:
   #! Newer images do not work
@@ -110,6 +103,7 @@ image:
 
 #! Ingress MUST BE DISABLED
 # Install it manually
+# https://github.com/eclipse/packages/pull/314
 # kaf ingress.yaml => https://hawkbit.localhost/
 ingress:
   enabled: false

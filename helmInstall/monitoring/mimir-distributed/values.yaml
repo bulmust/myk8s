@@ -8,9 +8,7 @@ global:
   dnsService: kube-dns
   dnsNamespace: kube-system
 
-#! Mimir Values
 mimir:
-
   #! Structured Config
   structuredConfig:
 
@@ -19,13 +17,23 @@ mimir:
       enabled: true
 
     #! Limits
+    #* https://grafana.com/docs/mimir/latest/configure/configure-metrics-storage-retention/#configure-the-storage-retention
     limits:
 
-      #! Retention Period
+      #! Retention
       compactor_blocks_retention_period: 2d
       max_global_series_per_user: 700000
       ingestion_rate: 50000
       ingestion_burst_size: 70000
+
+  #! Runtinme Config
+  #* https://grafana.com/docs/mimir/latest/configure/about-runtime-configuration/
+  # runtimeConfig:
+  #   #! Tenant Based Retention
+  #   overrides:
+  #     myk8s-2:
+  #       retention_period: 4d
+
 
 #! Mimir Alertmanager
 alertmanager:
