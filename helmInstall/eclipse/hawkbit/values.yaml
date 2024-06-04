@@ -60,6 +60,12 @@ mysql:
 # https://github.com/bitnami/charts/blob/master/bitnami/rabbitmq/values.yaml
 rabbitmq:
   enabled: true
+  
+  #! Bug fix
+  # https://github.com/bitnami/containers/issues/20752
+  #* /opt/bitnami/scripts/rabbitmq/run.sh: line 47: ulimit: open files: cannot modify limit: Operation not permitted
+  # ulimitNofiles: 0
+
   persistence:
     enabled: true
     size: "1Gi"
