@@ -19,9 +19,5 @@ helm upgrade --install\
     -f values.yaml\
     --version=$appVer
 
-chartName: grafana
-version: 7.3.11
-repository: https://grafana.github.io/helm-charts
-
 # Apply the dashboards
 kaf dashboard-root.yaml

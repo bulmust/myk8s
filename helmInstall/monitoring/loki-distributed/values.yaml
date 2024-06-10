@@ -1,3 +1,4 @@
+#! Loki Configuration
 loki:
   config: |
     auth_enabled: true
@@ -148,24 +149,41 @@ loki:
     # https://grafana.com/docs/loki/latest/operations/storage/schema/
     schema_config:
       configs:
-        - from: "2024-04-01"
+        #! TSDB schema
+        - from: "2024-06-01"
+          store: tsdb
           index:
             period: 24h
             prefix: loki_index_
           object_store: s3
           schema: v13
-          store: boltdb-shipper
-  storageConfig:
-    aws:
-      s3forcepathstyle: true
-      bucketnames: loki-boltdb-shipper
-      endpoint: minio:9000
-      access_key_id: bulmust
-      secret_access_key: bulmustbulmust
-      insecure: true
-    boltdb_shipper:
-      shared_store: s3
-    filesystem: null
+        #! boltdb-shipper schema
+        # - from: "2024-04-01"
+        #   index:
+        #     period: 24h
+        #     prefix: loki_index_
+        #   object_store: s3
+        #   schema: v13
+        #   store: boltdb-shipper
+    storageConfig:
+      tsdb_shipper:
+        active_index_directory: /data/tsdb-index
+        cache_location: /data/tsdb-cache
+      aws:
+        s3forcepathstyle: true
+        bucketnames: loki-boltdb-shipper
+        endpoint: minio:9000
+        access_key_id: bulmust
+        secret_access_key: bulmustbulmust
+        insecure: true
+      # boltdb_shipper:
+      #   shared_store: s3
+      filesystem: null
+    
+    querier:
+      max_concurrent: 10
+
+#! Ingester Pod
 ingester:
   extraArgs:
     - -config.expand-env=true
@@ -179,9 +197,13 @@ ingester:
   persistence:
     enabled: true
     size: 3Gi
+
+#! Distributor Pod
 distributor:
   extraArgs:
     - -config.expand-env=true
+
+#! Querier Pod
 querier:
   extraArgs:
     - -config.expand-env=true
@@ -191,6 +213,8 @@ querier:
   # maxUnavailable: 1
   # If you DONT want to spread the replicas across the nodes, you should define the affinity as below
   # affinity: []
+
+#! Query Frontend Pod
 queryFrontend:
   extraArgs:
     - -config.expand-env=true
@@ -200,10 +224,16 @@ queryFrontend:
   # maxUnavailable: 1
   # If you DONT want to spread the replicas across the nodes, you should define the affinity as below
   # affinity: []
+
+#! Table Manager Pod
 tableManager:
   enabled: false
+
+#! Ingress
 ingress:
   enabled: false
+
+#! Gateway Pod
 gateway:
   enabled: true
   ingress:
@@ -230,6 +260,8 @@ gateway:
   nginxConfig:
     serverSnippet: client_max_body_size 200M;
     httpSnippet: client_max_body_size 200M;
+
+#! Compactor Pod
 compactor:
   enabled: true
   # extraVolumes:

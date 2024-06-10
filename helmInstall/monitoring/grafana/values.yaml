@@ -1,4 +1,8 @@
-#! 7.3.11
+# #! Gloabl Configuration
+# global:
+#   # Image Pull Secrets
+#   imagePullSecrets:
+#     - name: nexus
 
 #! Image
 image:
@@ -7,10 +11,31 @@ image:
   tag: "11.0.0"
   pullPolicy: IfNotPresent
 
+# #! Curl Image
+# downloadDashboardsImage:
+#   repository: nexus-image.localhost/curlimages/curl
+
+# #! Init Chown Image
+# initChownData:
+#   image:
+#     registry: nexus-image.localhost
+
+# #! Test Framework Image
+# testFramework:
+#   registry: nexus-image.localhost
+
+# #! Image Renderer Image
+# imageRenderer:
+#   image:
+#     registry: nexus-image.localhost
+
 #! Ingress
 ingress:
   enabled: true
   ingressClassName: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: local-ca-issuer-01
+    nginx.org/websocket-services: grafana
   hosts:
     - grafana.localhost
   path: /
@@ -32,6 +57,8 @@ ingress:
 # persistence:
 #   type: pvc
 #   enabled: true
+#   annotations:
+#     volume.kubernetes.io/selected-node: myk8s-worker2 # Node name
 #   accessModes:
 #     - ReadWriteOnce
 #   size: 1Gi
@@ -86,10 +113,10 @@ datasources:
       type: loki
       access: proxy
       orgId: 1
-      url: http://loki-distributed-gateway.monitoring.svc.cluster.local/
+      #url: http://loki-distributed-gateway.monitoring.svc.cluster.local/
+      url: http://loki-gateway.monitoring.svc.cluster.local/
       editable: true
       isDefault: false
-      #! Data source - Loki - Headers
       jsonData:
         httpHeaderName1: "X-Scope-OrgID"
       secureJsonData:
@@ -125,13 +152,31 @@ datasources:
 #       gnetId: 19105
 #       datasource: 'Metrics_All'
 
-#! Grafana Configuration
+#! Grafana Configuration (grafana.ini)
 grafana.ini:
+  # Configure feature toggles
+  #* https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/feature-toggles/
+  # feature_toggles:
+  #   tempoApmTable: true
+  #   traceToMetrics: true
 
+  # # Data Proxy Configuration
+  # dataproxy:
+  #   timeout: 300
+
+  # # User Configuration
+  # users:
+  #   viewers_can_edit: "True"
+
+  # # Grafana.net Configuration
+  # grafana_net:
+  #   url: https://nexus.localhost/repository/grafana.net/
+
+  # Database Configuration
   database:
     wal: true
   
-  #! Azure-AD Configuration
+  # Azure-AD Configuration
   server:
     root_url: https://%(domain)s:/
   # auth.azuread:
@@ -148,7 +193,7 @@ grafana.ini:
   #   skip_org_role_sync: false
   #   token_url:
 
-  #! Assign Dashboard to Home
+  # Assign Dashboard to Home
   #* You have to import configmap with the dashboard
   #* The name of json file must be the same as the name of the dashboard in the configmap
   dashboards:
@@ -180,31 +225,33 @@ plugins:
 #       "annotations": {}
 #     }
 sidecar:
-  
-  #! Sidecar - Dashboards
+  # Dashboards
   dashboards:
     enabled: true
 
-    #! Sidecar - Dashboards - Catch all dashboards with this label
+    # Catch all dashboards with this label
     label: grafana_dashboard
     labelValue: "load"
     
-    #! Sidecar - Dashboards - Search all namespaces
+    # Search all namespaces
     searchNamespace: ALL
 
-    #! Sidecar - Dashboards - Annotations for sending dashboards to specific folders
+    # Annotations for sending dashboards to specific folders
     folderAnnotation: grafana_folder
     
+    # Multi Cluster
     multicluster:
       global:
         enabled: true
       etcd:
         enabled: true
+    
+    # Provider
     provider:
       allowUiUpdates: true
       foldersFromFilesStructure: true
   
-  ##! Sidecar - Alerts
+  # # Alerts
   # alerts:
   #   label: grafana_alert
   #   enabled: true
@@ -213,20 +260,20 @@ sidecar:
   #   provider:
   #     allowUiUpdates: true
 
-
+#! Image Ren
 imageRenderer:
   grafanaProtocol: https
 
 #! Alerts
 # alerting:
 
-  # #! Alerts - Contactpoints
+  # # Contactpoints
   # contactpoints.yaml:
   #   secret:
   #     apiVersion: 1
   #     contactPoints:
         
-  #       #! Alerts - Contactpoints - Microsoft Teams
+  #       # Microsoft Teams
   #       - orgId: 1
   #         name: Teams-Channel-Name
   #         receivers:
@@ -238,19 +285,19 @@ imageRenderer:
   #             summary: |
   #               {{ `{{ include "default.message" . }}` }}
 
-  # #! Alerts - Policies
+  # # Policies
   # policies.yaml:
   #   policies:
   #     - orgId: 1
   #       receiver: Teams-Channel-Name
   #
-  #       #! Alerts - Policies - Conditions
+  #       # Conditions
   #       #* If you label your alerts with 'send' and 'severity', It will send alerts to the Teams-Chanel-Name
   #       matchers:
   #         - send = teams-devops-infra
   #         - severity = critical
 
-#! NodeSelector and Tolerations
+#! Node Selector/Tolerations
 #* If the nodes are tainted
 # nodeSelector:
 #   role: monitoring
