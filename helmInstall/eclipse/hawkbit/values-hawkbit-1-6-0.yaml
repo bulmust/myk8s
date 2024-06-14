@@ -158,9 +158,23 @@ config:
           name: admin
   secrets:
     hawkbit:
-      dmf:
-        hono:
-          password: "[KEYCLOAK_HAWKBIT_USER_PASSWORD]"
+      artifact:
+        url:
+          protocols:
+            download-http:
+              rel: "download-http"
+              hostname: "<hawkbit-host>"
+              protocol: "https"
+              supports: "DMF,DDI"
+              ref: "{protocol}://{hostnameRequest}/{tenant}/controller/v1/{controllerId}/softwaremodules/{softwareModuleId}/artifacts/{artifactFileName}"
+      server:
+        forward-headers-strategy: "NATIVE"
+        ddi:
+          security:
+            authentication:
+              gatewaytoken:
+                enabled: "true"
+                key: "99d182918c2cef5227d1e86cc27c922e"
     spring:
       security:
         user:

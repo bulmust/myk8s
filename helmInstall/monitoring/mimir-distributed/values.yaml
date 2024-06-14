@@ -1,35 +1,33 @@
-#! 5.3.0
-
 #! Global values
 global:
   
-  #! Dns service
+  # Dns service
   #dnsService: coredns
   dnsService: kube-dns
   dnsNamespace: kube-system
 
 mimir:
-  #! Structured Config
+  # Structured Config
   structuredConfig:
 
-    #! Tenant Federation
+    # Tenant Federation
     tenant_federation:
       enabled: true
 
-    #! Limits
+    # Limits
     #* https://grafana.com/docs/mimir/latest/configure/configure-metrics-storage-retention/#configure-the-storage-retention
     limits:
 
-      #! Retention
+      # Retention
       compactor_blocks_retention_period: 2d
       max_global_series_per_user: 700000
       ingestion_rate: 50000
       ingestion_burst_size: 70000
 
-  #! Runtinme Config
+  # Runtinme Config
   #* https://grafana.com/docs/mimir/latest/configure/about-runtime-configuration/
   # runtimeConfig:
-  #   #! Tenant Based Retention
+  #   # Tenant Based Retention
   #   overrides:
   #     myk8s-2:
   #       retention_period: 4d
@@ -60,7 +58,7 @@ distributor:
 #! Mimir Ingester
 ingester:
 
-  #! Mimir Ingester Replica
+  # Mimir Ingester Replica
   #* 1 is not enough
   replicas: 2
   # tolerations:
@@ -71,7 +69,7 @@ ingester:
   # nodeSelector:
   #   role: monitoring
   
-  #! Ingester Persisten Volume
+  # Ingester Persisten Volume
   persistentVolume:
     enabled: false
     #size: 2Gi
@@ -83,11 +81,11 @@ ingester:
   #   limits:
   #     memory: 6Gi
   
-  # #! Rollout Operator
+  # # Rollout Operator
   # rollout_operator:
   #   enabled: false
 
-  #! Zone Aware Replication
+  # Zone Aware Replication
   zoneAwareReplication:
     enabled: false
 
@@ -287,27 +285,30 @@ nginx:
 
 #! Meta Monitoring
 metaMonitoring:
-
-  #! Meta Monitoring Dashboards
+  # Dashboards
   dashboards:
     enabled: true
 
-    #! Add labels and annotations to the dashboards
+    # Add labels and annotations to the dashboards
     #* Check configs in Grafana Helm Chart: .Values.sidecar.dashboards.folderAnnotation
     labels:
       grafana_dashboard: "load"
     annotations:
       grafana_folder: "Infrastructure"
   
-  #! Service Monitor
+  # Service Monitor
   serviceMonitor:
     enabled: true
     interval: 15s
   
-  #! Grafana Agent
+  # Grafana Agent
   grafanaAgent:
     enabled: true
 
+    # Image
+    image:
+      tag: v0.41.0
+    
     # tolerations:
     #   - key: "product"
     #     operator: "Equal"
@@ -316,16 +317,16 @@ metaMonitoring:
     # nodeSelector:
     #   role: monitoring
     
-    #! Grafana Agent Config
+    # Config
     installOperator: true
     containerSecurityContext:
       allowPrivilegeEscalation: false
     
-    #! Grafana Agent Logs
+    # Logs
     logs:
       enabled: false
     
-    #! Grafana Agent Metrics
+    # Metrics
     metrics:
       enabled: true
       remote:

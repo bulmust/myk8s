@@ -43,10 +43,10 @@ grafana:
 #! Prometheus
 prometheus:
   # Image
-  image:
-    registry: quay.io
-    repository: prometheus/prometheus
-    tag: v2.52.0
+  # image:
+  #   registry: quay.io
+  #   repository: prometheus/prometheus
+  #   tag: v2.52.0
 
   # Ingress
   ingress:
@@ -89,6 +89,9 @@ prometheus:
     #* Enables access to the Prometheus web admin API.
     #! This is a potential security risk and should be disabled in production.
     enableAdminAPI: true
+
+    # Remote Write Dashboards
+    remoteWriteDashboards: true
 
     # Retention
     retention: 2d
