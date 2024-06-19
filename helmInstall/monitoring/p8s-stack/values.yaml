@@ -142,6 +142,12 @@ prometheus:
         #     action: keep
 
         # collectd, pod_status
+    
+    # Additional Scrape Configs
+    # additionalScrapeConfigs:
+    #   - job_name: 'istanbul-nar1-windows-exporter'
+    #     static_configs:
+    #       - targets: ["192.168.1.1:9182"]
 
     # # Resources
     # resources:

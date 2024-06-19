@@ -247,6 +247,8 @@ minio:
   
   #! Service Monitor
   metrics:
+    # Namespace is different from the prometheus-operator
+    #namespace: monitoring-p8s-stack
     serviceMonitor:
       additionalLabels:
         release: p8s-stack
