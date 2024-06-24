@@ -9,3 +9,6 @@ offline-packages*
 
 # Python cache
 __pycache__/
+
+# Files ended with ~
+*~

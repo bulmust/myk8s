@@ -4,6 +4,11 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+# This scripts path
+# Script may be run from any directory
+SCRIPT_PATH=$(cd $(dirname "$0") && pwd)
+echo "${GREEN}Current Directory${NC}: ${SCRIPT_PATH}"
+
 # Cluster Name
 clusterName="myk8s"
 
@@ -48,9 +53,9 @@ if [ "$response" = "y" ] || [ "$response" = "Y" ]; then
         mkdir -r certificates/
         cd certificates/
         # Create Self-Signed Certificate
-        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout certificates/localhost.key -out certificates/localhost.crt -subj "/CN=localhost"
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout localhost.key -out localhost.crt -subj "/CN=localhost"
         # Create Certificate and Key Secret in kube-system Namespace 
-        kubectl create secret tls -n kube-system localhost-tls --cert=certificates/localhost.crt --key=certificates/localhost.key
+        kubectl create secret tls -n kube-system localhost-tls --cert=localhost.crt --key=localhost.key
         cd -
     else
         echo "${GREEN}certificates Folder Exists${NC}"
@@ -58,7 +63,7 @@ if [ "$response" = "y" ] || [ "$response" = "Y" ]; then
         echo "${GREEN}Hold old certificates and continue${NC}"
         cd certificates/
         # Create Certificate and Key Secret in kube-system Namespace 
-        kubectl create secret tls -n kube-system localhost-tls --cert=certificates/localhost.crt --key=certificates/localhost.key
+        kubectl create secret tls -n kube-system localhost-tls --cert=localhost.crt --key=localhost.key
         cd -
     fi
     PORT=443
